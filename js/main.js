@@ -119,7 +119,7 @@ $(document).ready(function () {
             <thead>
               <tr > 
                 <th  class="lokals-item d-flex justify-content-between align-items-center"> 
-                  <div class="p-2 bd-highlight  ">Distrito</div> 
+                  <div class="p-2 bd-highlight  ">Lokal</div> 
                   <div class="p-2 bd-highlight   ">Views</div>
                 </th> 
               </tr>
@@ -209,7 +209,7 @@ $(document).ready(function () {
                 <thead>
                   <tr > 
                     <th  class="lokals-item d-flex justify-content-between align-items-center"> 
-                      <div class="p-2 bd-highlight  ">Top ${number_tops} Distrito </div> 
+                      <div class="p-2 bd-highlight  ">Top ${number_tops} Lokal </div> 
                       <div class="p-2 bd-highlight   ">Views</div>
                     </th> 
                   </tr>
