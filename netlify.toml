@@ -1,0 +1,15 @@
+[build]
+  publish = "public"
+  command = "bundle exec jekyll build"
+
+[context.production.environment]
+  GO_VERSION = "1.19"
+
+[context.deploy-preview.environment]
+  GO_VERSION = "1.19"
+
+[context.branch-deploy.environment]
+  GO_VERSION = "1.19"
+
+[context.next.environment]
+  GO_VERSION = "1.19"

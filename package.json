@@ -1,0 +1,15 @@
+{
+  "name": "firebase-counter",
+  "version": "1.0.0",
+  "description": "A project using Firebase and Netlify",
+  "scripts": {
+    "build": "bundle exec jekyll build",
+    "serve": "bundle exec jekyll serve"
+  },
+  "dependencies": {
+    
+  },
+  "engines": {
+    "go": "1.19"
+  }
+}
