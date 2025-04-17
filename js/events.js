@@ -187,7 +187,7 @@ $(document).ready(function () {
       SelectData(); // post - firebase 
       // updateLocalView()
       $('.load-end').html(`
-        "Your views have been updated."<br><br>
+        "Nabilang na ang iyong views sa aming server,"<br> pero hindi pa ito final. Babawasan ito ayon sa request ni Ka-Rommel. Maaaring hindi rin eksakto ang final na bilang ng views dahil sa algorithm ng YouTube.<br><br>"Salamat sa inyong pang-unawa."<br><br>
         "Refresh the page to rewatch."
     `);
       $.LoadingOverlay("hide", true); //remmove the loading overlay
