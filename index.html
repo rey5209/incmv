@@ -91,6 +91,11 @@ var counter = {"ajax_url":"rey5209.github.io"};
  
 </header>
 
+<div id="first-visit-warning" class="alert alert-primary alert-dismissible fade show text-center shadow-lg" role="alert" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1050; max-width: 90%; border-radius: 10px;">
+  <!-- The alert message will be dynamically inserted here -->
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
 <main class="container-lg my-md-5 site-main post-10 page type-page status-publish hentry" role="main">
    
 		<div class="page-content row justify-content-center">
@@ -141,5 +146,28 @@ var counter = {"ajax_url":"rey5209.github.io"};
 <script src="js/main.js?ver=1" type="module"></script>
 <script src="js/scroller.js"  ></script>
 <!-- <script type="text/javascript" src="js/today.json"></script> --> 
+
+<script>
+  fetch('alert.json')
+    .then(response => response.json())
+    .then(data => {
+      if (data.alert.enabled) {
+        const now = new Date();
+        const formattedTime = now.toLocaleString('en-US', { timeZoneName: 'short' });
+        const alertElement = document.getElementById('first-visit-warning');
+        alertElement.innerHTML = `
+          ${data.alert.message} <br><small>As of today (${formattedTime})</small>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        alertElement.style.display = 'block';
+
+        // Automatically remove the alert after 5 seconds
+        setTimeout(() => {
+          alertElement.style.display = 'none';
+        }, 5000); // 5,000 milliseconds = 5 seconds
+      }
+    })
+    .catch(error => console.error('Error fetching alert data:', error));
+</script>
 
 </body></html>

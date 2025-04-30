@@ -1,0 +1,7 @@
+{
+    "alert": {
+      "enabled": true,
+      "message": "You are viewing the latest update."
+    }
+  }
+  
