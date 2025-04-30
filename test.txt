@@ -1,0 +1,3 @@
+JSON.parse(localStorage.getItem('daily-alert-count'));
+
+localStorage.removeItem('daily-alert-count');

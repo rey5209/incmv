@@ -156,29 +156,61 @@ var counter = {"ajax_url":"rey5209.github.io"};
 <!-- <script type="text/javascript" src="js/today.json"></script> --> 
 
 <script>
-  fetch('alert.json')
-    .then(response => response.json())
-    .then(data => {
-      if (data.alert.enabled) {
-        const now = new Date();
-        const formattedTime = now.toLocaleString('en-US', { timeZoneName: 'short' });
-        const alertElement = document.getElementById('first-visit-warning');
-        alertElement.innerHTML = `
-          ${data.alert.message} <br><small>As of today (${formattedTime})</small>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        alertElement.style.display = 'block';
+  const ALERT_KEY = 'daily-alert-count';
+  const MAX_ALERTS = 3;
 
-        // Automatically fade out and remove the alert after 10 seconds
-        setTimeout(() => {
-          alertElement.style.opacity = '0'; // Fade out
+  // Get the current date in YYYY-MM-DD format
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  };
+
+  // Check and update the alert count
+  const shouldShowAlert = () => {
+    const currentDate = getCurrentDate();
+    const alertData = JSON.parse(localStorage.getItem(ALERT_KEY)) || { date: '', count: 0 };
+
+    if (alertData.date !== currentDate) {
+      // Reset the count for a new day
+      localStorage.setItem(ALERT_KEY, JSON.stringify({ date: currentDate, count: 1 }));
+      return true;
+    }
+
+    if (alertData.count < MAX_ALERTS) {
+      // Increment the count for the current day
+      alertData.count += 1;
+      localStorage.setItem(ALERT_KEY, JSON.stringify(alertData));
+      return true;
+    }
+
+    return false; // Do not show the alert if the limit is reached
+  };
+
+  if (shouldShowAlert()) {
+    fetch('alert.json')
+      .then(response => response.json())
+      .then(data => {
+        if (data.alert.enabled) {
+          const now = new Date();
+          const formattedTime = now.toLocaleString('en-US', { timeZoneName: 'short' });
+          const alertElement = document.getElementById('first-visit-warning');
+          alertElement.innerHTML = `
+            ${data.alert.message} <br><small>As of today (${formattedTime})</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          `;
+          alertElement.style.display = 'block';
+
+          // Automatically fade out and remove the alert after 10 seconds
           setTimeout(() => {
-            alertElement.style.display = 'none'; // Remove after fade-out
-          }, 1000); // Wait for fade-out transition to complete
-        }, 5000); // 10,000 milliseconds = 10 seconds
-      }
-    })
-    .catch(error => console.error('Error fetching alert data:', error));
+            alertElement.style.opacity = '0'; // Fade out
+            setTimeout(() => {
+              alertElement.style.display = 'none'; // Remove after fade-out
+            }, 1000); // Wait for fade-out transition to complete
+          }, 5000); // 5,000 milliseconds = 5 seconds
+        }
+      })
+      .catch(error => console.error('Error fetching alert data:', error));
+  }
 </script>
 
 </body></html>
