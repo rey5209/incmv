@@ -165,6 +165,8 @@ $(document).ready(function () {
 
     updateWaitingText(array_duration[0], array_duration[1])
 
+    startCountdown(parseInt(array_duration[0]), parseInt(array_duration[1]))
+
     // compute secs (compress all into secs) - then *1000 for duration conversion
     sec = parseInt(array_duration[1]) + (parseInt(array_duration[0]) * 60);
     sec = sec * 1000;
@@ -234,6 +236,19 @@ $(document).ready(function () {
     $('.txt-notes .timer').text(str_timer);
 
     // 
+  }
+
+  function startCountdown(mins, secs) {
+    var totalSeconds = secs + (mins * 60);
+    var interval = setInterval(function() {
+      var displayMins = Math.floor(totalSeconds / 60);
+      var displaySecs = totalSeconds % 60;
+      updateWaitingText(displayMins, displaySecs);
+      totalSeconds--;
+      if (totalSeconds < 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
   }
 
   function loadingFunction(sec) {
