@@ -1,10 +1,10 @@
-// console.log('hg   ')
+// //console.log('hg   ')
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.4/firebase-app.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-import { arr, firebaseConfig, BASE_PATH } from "./constant.js";
+import { arr, firebaseConfig, BASE_PATH, EXTERNAL_PATH, EXTERNAL_PATH_ENDPOINT,arr_external } from "./constant.js";
 
 
 // Initialize Firebase
@@ -64,8 +64,8 @@ $(document).ready(function () {
   var lokal_page_id = urlParams.pageId[0]
   var link = '';
 
-  // console.log(lokal_name)
-  // console.log(lokal_page_id)
+  //console.log(lokal_name)
+  //console.log(lokal_page_id)
 
   document.title = lokal_name;
 
@@ -80,7 +80,7 @@ $(document).ready(function () {
       return response.json();
     })
     .then(function (data) {
-      // console.log(data)
+      //console.log(data)
 
       different_link = data.jsonData[lokal_page_id - 1].different_link_per_data;
       different_img = data.jsonData[lokal_page_id - 1].different_img_per_data;
@@ -106,10 +106,10 @@ $(document).ready(function () {
 
 
       function setViews(item, index) {
-        // console.log(local,item.lokal.toUpperCase())
+        //console.log(local,item.lokal.toUpperCase())
 
         if (local === item.lokal.toUpperCase()) {
-          // console.log('pasok')
+          // //console.log('pasok')
           continueFunction = true
  
           if (data.jsonData[lokal_page_id - 1].viewDataType === 'firebase') {
@@ -137,7 +137,7 @@ $(document).ready(function () {
       }// ./.
 
     }).catch(function (error) {
-      // console.log(error);
+      //console.log(error);
     });
 
 
@@ -165,11 +165,13 @@ $(document).ready(function () {
 
     updateWaitingText(array_duration[0], array_duration[1])
 
+    startCountdown(parseInt(array_duration[0]), parseInt(array_duration[1]))
+
     // compute secs (compress all into secs) - then *1000 for duration conversion
     sec = parseInt(array_duration[1]) + (parseInt(array_duration[0]) * 60);
     sec = sec * 1000;
 
-    // console.log(array_duration)
+    //console.log(array_duration)
 
     loadingFunction(sec);
 
@@ -182,12 +184,12 @@ $(document).ready(function () {
 
     setTimeout(function () {
       //temp disable 
-      // console.log('updating views')
-      // console.log('done')
+      //console.log('updating views')
+      //console.log('done')
       SelectData(); // post - firebase 
       // updateLocalView()
       $('.load-end').html(`
-        "Nabilang na ang iyong views sa aming server,"<br><br>"pero hindi pa ito final. Babawasan ito ayon sa request ni <b>Ka-Rommel</b>. Maaaring hindi rin eksakto ang final na bilang ng views dahil sa algorithm ng YouTube."<br><br>"Salamat sa inyong pang-unawa."<br><br>
+        "Please contact your KDO Officer if you encounter an error"<br><br>
         "Refresh the page to rewatch."
     `);
       $.LoadingOverlay("hide", true); //remmove the loading overlay
@@ -234,6 +236,19 @@ $(document).ready(function () {
     $('.txt-notes .timer').text(str_timer);
 
     // 
+  }
+
+  function startCountdown(mins, secs) {
+    var totalSeconds = secs + (mins * 60);
+    var interval = setInterval(function() {
+      var displayMins = Math.floor(totalSeconds / 60);
+      var displaySecs = totalSeconds % 60;
+      updateWaitingText(displayMins, displaySecs);
+      totalSeconds--;
+      if (totalSeconds < 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
   }
 
   function loadingFunction(sec) {
@@ -292,8 +307,8 @@ $(document).ready(function () {
   function updateLocalView(){
 
     let localInsert = checkValidArg(arrNonValidPath, local)
-    // console.log(localInsert)
-    const que = query(ref(db, BASE_PATH+"viewTotal/" + localInsert));
+    //console.log(localInsert)
+    const que = query(ref(db, BASE_PATH+ "viewTotal/" + localInsert));
         // const que = query(ref(db, path));
     
     onValue(que, (snapshot) => {
@@ -301,8 +316,8 @@ $(document).ready(function () {
       snapshot.forEach((childSnapshot) => {
         responseData.push(childSnapshot.val());
       }); 
-      // console.log("ViewsCount/" + date + "/" + local)
-      // console.log(responseData)
+      // //console.log("ViewsCount/" + date + "/" + local)
+      //console.log(responseData)
       $('.lokal_view').text(Math.round(responseData[0] ?? 0)) 
     }) 
   }
@@ -314,55 +329,74 @@ $(document).ready(function () {
 
     let localInsert = checkValidArg(arrNonValidPath, local)
 
-
-    // console.log( BASE_PATH+"ViewsCount/" + date + "/" + localInsert)
+    // FOR FIRING FIREBASE METHODS - FOR LOCALS
     // for daily counts
     get(child(dbref, BASE_PATH+"ViewsCount/" + date + "/" + localInsert)).then((snapshot) => {
-      if (snapshot.exists()) {
-        // alert(snapshot.val().count)
-
-        UpdateData(snapshot.val().count, localInsert, BASE_PATH+"ViewsCount/" + date + "/" + localInsert)
-      } else {
-        // alert("No Data Found") 
+      if (snapshot.exists()) { 
+        UpdateData(snapshot.val().count, localInsert, BASE_PATH+"ViewsCount/" + date + "/" + localInsert)  
+      } else { 
         checkDayData()
       }
     }).catch((error) => {
       alert("Unssuccessful, error " + error)
-    })
-
+    }) 
     // for Totals
     get(child(dbref, BASE_PATH+"viewTotal/" + localInsert)).then((snapshot) => {
-      if (snapshot.exists()) {
-        // alert(snapshot.val().count)
-
+      if (snapshot.exists()) { 
         UpdateData(snapshot.val().count, localInsert, BASE_PATH+"viewTotal/" + localInsert)
       } else {
         // alert("No Data Found")  
-        arr.forEach((arrVal) => {
-          // console.log(arrVal) 
-          var arrVal = checkValidArg(arrNonValidPath, arrVal.toUpperCase())
-          InsertData(arrVal, 0, BASE_PATH+"viewTotal/" + arrVal)
-          // console.log(arrVal);
-        })
+        // arr.forEach((arrVal) => {
+        //   // //console.log(arrVal) 
+        //   var arrVal = checkValidArg(arrNonValidPath, arrVal)
+        //   InsertData(arrVal, 0, "viewTotal/" + arrVal)
+        //   // //console.log(arrVal);
+        // })
       }
     }).catch((error) => {
       alert("Unssuccessful, error " + error)
     })
+
+    //FOR EXTERNAL - DISTRICT (LINGAYEN PANGASINAN) 
+    // for daily counts
+    get(child(dbref, EXTERNAL_PATH+"ViewsCount/" + date + "/" + EXTERNAL_PATH_ENDPOINT)).then((snapshot) => {
+      if (snapshot.exists()) { 
+        UpdateData(snapshot.val().count, EXTERNAL_PATH_ENDPOINT, EXTERNAL_PATH+"ViewsCount/" + date + "/" + EXTERNAL_PATH_ENDPOINT)  
+      } else { 
+        checkDayData2() // remake data, new day
+      }
+    }).catch((error) => {
+      alert("Unssuccessful, error " + error)
+    }) 
+    // for Totals
+    get(child(dbref, EXTERNAL_PATH+"viewTotal/" + EXTERNAL_PATH_ENDPOINT)).then((snapshot) => {
+      if (snapshot.exists()) { 
+        UpdateData(snapshot.val().count, EXTERNAL_PATH_ENDPOINT, EXTERNAL_PATH+"viewTotal/" + EXTERNAL_PATH_ENDPOINT)
+      } else {
+        // alert("No Data Found")  
+        // arr.forEach((arrVal) => {
+        //   // ////console.log(arrVal) 
+        //   var arrVal = checkValidArg(arrNonValidPath, arrVal)
+        //   InsertData(arrVal, 0, "viewTotal/" + arrVal)
+        //   // ////console.log(arrVal);
+        // })
+      }
+    }).catch((error) => {
+      alert("Unssuccessful, error " + error)
+    })
+
+
 
   }
 
   function checkDayData() {
 
-    const dbref = ref(db);
-
-
-    get(child(dbref, BASE_PATH+"ViewsCount/" + date)).then((snapshot) => {
+    const dbref = ref(db); 
+    get(child(dbref, BASE_PATH+ "ViewsCount/" + date)).then((snapshot) => {
       if (snapshot.exists()) {
-        // if its not a new day but local is not found 
-
-        let localInsert = checkValidArg(arrNonValidPath, local.toUpperCase()) 
-        InsertData(localInsert, 1, BASE_PATH+"ViewsCount/" + date + "/" + localInsert)
-
+        // if its not a new day but local is not found  
+        let localInsert = checkValidArg(arrNonValidPath, local)
+        InsertData(localInsert, 1, BASE_PATH+"ViewsCount/" + date + "/" + local) 
 
       } else {
         // if it is a new day, reinitialize data
@@ -376,26 +410,53 @@ $(document).ready(function () {
     })
 
   }
+  
+  function checkDayData2() {
 
-  function reinitializeData() {
+    const dbref = ref(db); 
+    get(child(dbref, EXTERNAL_PATH+ "ViewsCount/" + date)).then((snapshot) => {
+      if (snapshot.exists()) {
+        // if its not a new day but local is not found  
+        // let localInsert = checkValidArg(arrNonValidPath, local)
+        InsertData(localInsert, 1, EXTERNAL_PATH+"ViewsCount/" + date + "/" + EXTERNAL_PATH_ENDPOINT) 
 
+      } else {
+        // if it is a new day, reinitialize data
+        reinitializeData2()
+        // SelectData()
 
-    arr.forEach((arrVal) => {
-      // console.log(arrVal) 
-      var arrVal = checkValidArg(arrNonValidPath, arrVal) 
-      // InsertData(arrVal, 0)  
-      InsertData(arrVal, 0, BASE_PATH+"ViewsCount/" + date + "/" + arrVal)
-      // console.log(arrVal);
+        // alert("No Data Found")
+      }
+    }).catch((error) => {
+      alert("Unssuccessful, error " + error)
     })
 
+  }
+
+  function reinitializeData() { 
+    arr.forEach((arrVal) => {
+      // ////console.log(arrVal) 
+      var arrVal = checkValidArg(arrNonValidPath, arrVal) 
+      // InsertData(arrVal, 0)  
+      InsertData(arrVal, 0, BASE_PATH + "ViewsCount/" + date + "/" + arrVal)
+      // ////console.log(arrVal);
+    }) 
+  }
+  function reinitializeData2() { 
+    arr_external.forEach((arrVal) => {
+      // ////console.log(arrVal) 
+      var arrVal = checkValidArg(arrNonValidPath, arrVal) 
+      // InsertData(arrVal, 0)  
+      InsertData(arrVal, 0, EXTERNAL_PATH + "ViewsCount/" + date + "/" + arrVal)
+      // ////console.log(arrVal);
+    }) 
   }
 
 
   // INSERT DATA FUNCTION
 
   function InsertData(localName, countval, path) {
-    // console.log(path)
-    // console.log('localname: ' + localName + ' count: ' + countval)
+    ////console.log('localname: ' + localName + ' count: ' + countval)
 
     set(ref(db, path), {
       name: localName,
@@ -424,7 +485,6 @@ $(document).ready(function () {
     })
       .then(() => {
         // alert("Data updated successfully")
-        // console.log("updated success")
       })
       .catch((error) => {
         alert("Unssuccessful, error " + error)
@@ -435,12 +495,10 @@ $(document).ready(function () {
 
   function checkValidArg(arrNonValidPath, arrVal) {
 
-    // console.log(arrVal)
-
     var result = arrNonValidPath.filter(x => arrVal.includes(x.type));
     if (result.length > 0) {
 
-      // console.log(arrVal); 
+      // //console.log(arrVal); 
       result.forEach((x) => {
         arrVal = fixPathArgs(x, arrVal);
       })
@@ -455,7 +513,7 @@ $(document).ready(function () {
   function fixPathArgs(arrResult, word) {
 
     let type = arrResult.type;
-    // console.log(arrResult)
+    // //console.log(arrResult)
     const regex = new RegExp(`[\\${type}]`, "g");
     word = word.replace(regex, arrResult.replace);
 
